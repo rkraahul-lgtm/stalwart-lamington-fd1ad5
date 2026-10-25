@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Advocate Desk</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:wght@600;700&display=swap">
+<style>
+/* Layout: one header, four tabs, single column that widens to two on desktop. */
+:root{--bg:#f4f6f3;--surface:#fff;--fg:#17211d;--muted:#5b6862;--line:#d9dfda;--accent:#0e5a52;--accent-fg:#fff;--soft:#e4efec;--warn:#7a4f00;--warn-bg:#fbf0d9;--bad:#a12622;--bad-bg:#f8e3e1;--ok:#1d6b3a;--ok-bg:#e0f1e5;
+--serif:"Source Serif 4",Georgia,serif;--sans:"IBM Plex Sans",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1614;--surface:#17211e;--fg:#e6ece8;--muted:#9aa8a1;--line:#2a3833;--accent:#5cc4b5;--accent-fg:#08201c;--soft:#1b2f2b;--warn:#e8b45a;--warn-bg:#33290f;--bad:#f08a85;--bad-bg:#3a1a19;--ok:#6fd18f;--ok-bg:#143222;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1614;--surface:#17211e;--fg:#e6ece8;--muted:#9aa8a1;--line:#2a3833;--accent:#5cc4b5;--accent-fg:#08201c;--soft:#1b2f2b;--warn:#e8b45a;--warn-bg:#33290f;--bad:#f08a85;--bad-bg:#3a1a19;--ok:#6fd18f;--ok-bg:#143222;color-scheme:dark}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 var(--sans);padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1000px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font:700 26px/1.2 var(--serif);margin:0}
+h2{font:600 19px/1.3 var(--serif);margin:0 0 10px}
+h3{font:600 15px var(--sans);margin:0 0 6px}
+.sub{color:var(--muted);margin:2px 0 0}
+nav{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+nav button{background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);font:500 15px var(--sans);padding:10px 14px;cursor:pointer}
+nav button[aria-selected=true]{color:var(--accent);border-color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;min-width:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:10px}
+label{display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--muted);min-width:0}
+input,select,textarea{font:15px var(--sans);color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px;width:100%;min-width:0}
+textarea{min-height:60px;resize:vertical}
+.row{display:flex;gap:8px;align-items:flex-end}.row>label{flex:1}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+button.b{font:500 14px var(--sans);border-radius:6px;padding:8px 12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+button.p{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+button.d{color:var(--bad);border-color:var(--bad)}
+button.armed{background:var(--bad);color:#fff;border-color:var(--bad)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.item{border-top:1px solid var(--line);padding:12px 0;display:flex;flex-direction:column;gap:6px}
+.item:first-child{border-top:0}
+.meta{color:var(--muted);font-size:13px;display:flex;gap:4px 14px;flex-wrap:wrap}
+.chip{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--soft);color:var(--accent)}
+.chip.warn{background:var(--warn-bg);color:var(--warn)}.chip.bad{background:var(--bad-bg);color:var(--bad)}.chip.ok{background:var(--ok-bg);color:var(--ok)}
+.banner{border-radius:6px;padding:10px 12px;font-size:13px;background:var(--soft)}.banner.bad{background:var(--bad-bg);color:var(--bad)}
+.num{font-variant-numeric:tabular-nums}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 6px;border-top:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--muted);font-weight:600;border-top:0}
+td.r,th.r{text-align:right}
+.scroll{overflow-x:auto}
+.empty{color:var(--muted);padding:8px 0}
+.tl{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:10px 0;border-top:1px solid var(--line)}
+.tl:first-child{border-top:0}.tl .rule{grid-column:1/-1;color:var(--muted);font-size:12px}
+pre{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px;font:13px/1.5 var(--sans);margin:8px 0}
+.small{font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head><body>
+
+<div class="wrap">
+  <header>
+    <h1>Advocate Desk</h1>
+    <p class="sub">Case diary for all courts, limitation guide, cheque bounce timelines and fee ledger.</p>
+  </header>
+  <div id="banner"></div>
+  <nav role="tablist" id="tabs"></nav>
+  <main id="main"></main>
+</div>
+
+<script>
+(function(){
+var KEY='advocateDesk.v1', storageOK=true;
+var S=load();
+var ui={tab:'diary',editCase:null,editFee:null,filter:'',receipt:'',calc:null,flash:'',open:{},level:'',day:'',gq:'',gc:'',writDate:'',lim:{pick:'c1',order:'',applied:'',ready:'',extra:'',caseId:'',label:''}};
+
+function norm(o){o=o||{};return{cases:Array.isArray(o.cases)?o.cases:[],fees:Array.isArray(o.fees)?o.fees:[],timelines:Array.isArray(o.timelines)?o.timelines:[]}}
+function load(){try{var r=localStorage.getItem(KEY);if(r)return norm(JSON.parse(r))}catch(e){}return norm()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));storageOK=true}catch(e){storageOK=false}banner()}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+
+/* ---------- dates (all UTC midnight, so no daylight-saving drift) ---------- */
+function parse(s){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||'');return m?Date.UTC(+m[1],+m[2]-1,+m[3]):null}
+function iso(ms){return new Date(ms).toISOString().slice(0,10)}
+function long(ms){return new Date(ms).toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short',year:'numeric',timeZone:'UTC'})}
+function today(){var n=new Date();return Date.UTC(n.getFullYear(),n.getMonth(),n.getDate())}
+function addDays(ms,n){return ms+n*86400000}
+function addMonths(ms,n){var d=new Date(ms),y=d.getUTCFullYear(),m=d.getUTCMonth()+n,last=new Date(Date.UTC(y,m+1,0)).getUTCDate();return Date.UTC(y,m,Math.min(d.getUTCDate(),last))}
+function diff(a,b){return Math.round((a-b)/86400000)}
+function rel(ms){var d=diff(ms,today());if(d===0)return['Today','warn'];if(d===1)return['Tomorrow','warn'];if(d<0)return[(-d)+(d===-1?' day':' days')+' ago','bad'];return['in '+d+' days',d<=7?'warn':'']}
+function inr(n){return '₹'+Number(n||0).toLocaleString('en-IN',{maximumFractionDigits:2})}
+
+/* ---------- tiny DOM helper (user text always goes through textContent) ---------- */
+function h(tag,a){var e=document.createElement(tag);a=a||{};for(var k in a){var v=a[k];if(k==='class')e.className=v;else if(k.indexOf('on')===0)e.addEventListener(k.slice(2),v);else if(v===true)e.setAttribute(k,'');else if(v!==false&&v!=null)e.setAttribute(k,v)}
+ for(var i=2;i<arguments.length;i++){var c=arguments[i];if(Array.isArray(c)){c.forEach(function(x){if(x!=null&&x!==false)e.append(x.nodeType?x:document.createTextNode(x))})}else if(c!=null&&c!==false)e.append(c.nodeType?c:document.createTextNode(c))}return e}
+function field(label,input){return h('label',{},label,input)}
+function chip(t,cls){return h('span',{class:'chip '+(cls||'')},t)}
+/* two-step delete: first click arms the button, second click inside 4 s confirms */
+function danger(label,armedLabel,fn,cls){var t,b=h('button',{class:'b d '+(cls||''),type:'button',onclick:function(){if(b.classList.contains('armed')){clearTimeout(t);fn()}else{b.classList.add('armed');b.textContent=armedLabel;t=setTimeout(function(){b.classList.remove('armed');b.textContent=label},4000)}}},label);return b}
+function flash(m){ui.flash=m;banner()}
+
+function banner(){var b=document.getElementById('banner');b.replaceChildren();
+ if(!storageOK)b.append(h('div',{class:'banner bad'},'This browser is blocking saving. Entries will be lost when you close the page. Use Backup in the Data tab.'));
+ else b.append(h('div',{class:'banner'},ui.flash||'Your entries are saved in this browser only, never on a server. Make a Backup (Data tab) now and then.'));}
+
+/* ---------- tabs ---------- */
+var TABS=[['diary','Case diary'],['day','Day list'],['limit','Limitation'],['cheque','Cheque bounce'],['fees','Fees'],['data','Data']];
+function render(){var t=document.getElementById('tabs');t.replaceChildren();
+ TABS.forEach(function(x){t.append(h('button',{role:'tab','aria-selected':ui.tab===x[0],onclick:function(){ui.tab=x[0];ui.flash='';banner();render()}},x[1]))});
+ var m=document.getElementById('main');m.replaceChildren(({diary:diary,day:dayList,limit:limitation,cheque:cheque,fees:fees,data:data})[ui.tab]());}
+
+/* ================= CASE DIARY (all courts) ================= */
+var LEVELS={trial:'District / trial court',hc:'High Court',sc:'Supreme Court',tri:'Tribunal / other'};
+var LORDER={sc:0,hc:1,trial:2,tri:3};
+var OUTC=['Heard','Adjourned','Order reserved','Order passed','Judgment','Disposed'];
+function lv(c){return c.level||'trial'}
+function courtLine(c){return [LEVELS[lv(c)],c.court].filter(Boolean).join(' · ')}
+function allDeadlines(){var o=[];S.cases.forEach(function(c){(c.deadlines||[]).forEach(function(d){o.push({c:c,d:d})})});return o.sort(function(a,b){return (a.d.date||'9').localeCompare(b.d.date||'9')})}
+function adjCount(c){return (c.log||[]).filter(function(x){return x.outcome==='Adjourned'}).length}
+function itemNo(c){var n=parseInt(c.item,10);return isNaN(n)?99999:n}
+function safeLong(s){var d=parse(s);return d==null?'No date':long(d)}
+
+function caseItem(c){
+ var d=parse(c.nextDate),r=d!=null?rel(d):null,adj=adjCount(c);
+ var det=h('details',{ontoggle:function(){ui.open[c.id]=det.open}},h('summary',{class:'small',style:'cursor:pointer;margin-top:4px'},'Proceedings and deadlines'));
+ det.open=!!ui.open[c.id];
+ var lf={date:h('input',{id:'l_date_'+c.id,type:'date',value:iso(today())}),out:h('select',{id:'l_out_'+c.id},OUTC.map(function(x){return h('option',{value:x},x)})),note:h('input',{id:'l_note_'+c.id,type:'text',placeholder:'What happened'}),next:h('input',{id:'l_next_'+c.id,type:'date'})};
+ var logBox=h('div',{style:'margin-top:8px'},h('h3',{},'Proceedings'),
+  h('div',{class:'form'},field('Date',lf.date),field('Outcome',lf.out),field('Note',lf.note),field('Next date (optional)',lf.next)),
+  h('div',{class:'actions'},
+   h('button',{class:'b p',type:'button',onclick:function(){c.log=c.log||[];c.log.push({id:uid(),date:lf.date.value,outcome:lf.out.value,note:lf.note.value.trim(),next:lf.next.value});if(lf.next.value)c.nextDate=lf.next.value;ui.open[c.id]=true;save();render()}},'Add entry'),
+   h('button',{class:'b',type:'button',onclick:function(){lf.note.value='';lf.next.value=''}},'Clear fields')));
+ (c.log||[]).slice().sort(function(a,b){return (b.date||'').localeCompare(a.date||'')}).forEach(function(x){
+  logBox.append(h('div',{class:'meta',style:'margin-top:8px;align-items:center'},h('span',{class:'num'},safeLong(x.date)),chip(x.outcome,x.outcome==='Adjourned'?'warn':''),x.note,x.next?'Next: '+safeLong(x.next):null,
+   danger('Delete','Click again',function(){c.log=c.log.filter(function(y){return y.id!==x.id});ui.open[c.id]=true;save();render()})))});
+ var dl={label:h('input',{id:'k_l_'+c.id,type:'text',placeholder:'e.g. Last day for appeal'}),date:h('input',{id:'k_d_'+c.id,type:'date'})};
+ var dlBox=h('div',{style:'margin-top:14px'},h('h3',{},'Deadlines'),
+  h('div',{class:'form'},field('Label',dl.label),field('Date',dl.date)),
+  h('div',{class:'actions'},
+   h('button',{class:'b p',type:'button',onclick:function(){if(!dl.date.value){dl.date.focus();flash('Choose a date for the deadline.');return}c.deadlines=c.deadlines||[];c.deadlines.push({id:uid(),label:dl.label.value.trim()||'Deadline',date:dl.date.value});ui.open[c.id]=true;save();render()}},'Add deadline'),
+   h('button',{class:'b',type:'button',onclick:function(){dl.label.value='';dl.date.value=''}},'Clear fields')));
+ (c.deadlines||[]).slice().sort(function(a,b){return (a.date||'').localeCompare(b.date||'')}).forEach(function(x){var xd=parse(x.date),xr=xd!=null?rel(xd):null;
+  dlBox.append(h('div',{class:'meta',style:'margin-top:8px;align-items:center'},h('strong',{},x.label),h('span',{class:'num'},safeLong(x.date)),xr?chip(xr[0],xr[1]):null,
+   danger('Delete','Click again',function(){c.deadlines=c.deadlines.filter(function(y){return y.id!==x.id});ui.open[c.id]=true;save();render()})))});
+ det.append(logBox,dlBox);
+ return h('div',{class:'item'},
+  h('div',{},h('strong',{},c.title),' ',c.example?chip('Example','warn'):null,' ',adj?chip('Adjourned '+adj+(adj===1?' time':' times'),'warn'):null),
+  h('div',{class:'meta'},chip(LEVELS[lv(c)]),c.court,c.bench&&('Bench: '+c.bench),c.item&&('Item '+c.item),[c.caseType,c.caseNo].filter(Boolean).join(' ')),
+  h('div',{class:'meta'},c.client&&('Client: '+c.client),c.opp&&('Against: '+c.opp),c.stage&&('Stage: '+c.stage)),
+  d!=null?h('div',{},'Next date: ',h('span',{class:'num'},long(d)),' ',chip(r[0],r[1])):h('div',{class:'small'},'No next date set'),
+  c.notes?h('div',{class:'small'},c.notes):null,
+  h('div',{class:'actions',style:'margin-top:2px'},
+   h('button',{class:'b',type:'button',onclick:function(){ui.editCase=c.id;render();window.scrollTo(0,0)}},'Edit'),
+   d!=null?h('button',{class:'b',type:'button',onclick:function(){c.nextDate='';save();render()}},'Clear date'):null,
+   danger('Delete case','Click again to delete',function(){S.cases=S.cases.filter(function(x){return x.id!==c.id});save();render()})),
+  det)}
+
+function diary(){
+ var e=ui.editCase?S.cases.filter(function(c){return c.id===ui.editCase})[0]:null;e=e||{};
+ var f={};
+ function inp(id,lab,type,val){f[id]=h('input',{id:'c_'+id,type:type||'text',value:val||''});return field(lab,f[id])}
+ f.level=h('select',{id:'c_level'},Object.keys(LEVELS).map(function(k){var o=h('option',{value:k},LEVELS[k]);if(k===(e.level||'trial'))o.selected=true;return o}));
+ f.notes=h('textarea',{id:'c_notes'});f.notes.value=e.notes||'';
+ var dateRow=h('div',{class:'row'},inp('nextDate','Next hearing date','date',e.nextDate),h('button',{class:'b',type:'button',onclick:function(){f.nextDate.value=''}},'Clear date'));
+ var keys=['title','client','opp','court','bench','item','caseType','caseNo','stage'];
+ var form=h('div',{class:'card'},h('h2',{},e.id?'Edit case':'Add a case'),
+  h('div',{class:'form'},inp('title','Case title','text',e.title),inp('client','Client','text',e.client),inp('opp','Opposite party','text',e.opp),field('Court level',f.level),inp('court','Court or place (e.g. Allahabad)','text',e.court),inp('bench','Bench / court room','text',e.bench),inp('item','Item / list number','text',e.item),inp('caseType','Case type (WP, Crl. Misc., SLP ...)','text',e.caseType),inp('caseNo','Case number','text',e.caseNo),inp('stage','Stage','text',e.stage),dateRow,field('Notes',f.notes)),
+  h('div',{class:'actions'},
+   h('button',{class:'b p',type:'button',onclick:function(){
+     var o={id:e.id||uid(),example:e.example||false,log:e.log||[],deadlines:e.deadlines||[],level:f.level.value,nextDate:f.nextDate.value,notes:f.notes.value.trim()};
+     keys.forEach(function(k){o[k]=f[k].value.trim()});
+     if(!o.title){f.title.focus();flash('Enter a case title first.');return}
+     if(e.id)S.cases=S.cases.map(function(c){return c.id===e.id?o:c});else S.cases.push(o);
+     ui.editCase=null;save();flash('Case saved.');render()}},e.id?'Save changes':'Save case'),
+   h('button',{class:'b',type:'button',onclick:function(){Object.keys(f).forEach(function(k){if(k!=='level')f[k].value=''})}},'Clear all fields'),
+   e.id?h('button',{class:'b',type:'button',onclick:function(){ui.editCase=null;render()}},'Cancel edit'):null));
+ var list=h('div',{class:'card'},h('h2',{},'All cases'));
+ var filt=h('input',{id:'c_filter',type:'search',placeholder:'Title, client, court, number',value:ui.filter,oninput:function(){ui.filter=filt.value;fill()}});
+ var lvs=h('select',{id:'c_lvfilter',onchange:function(){ui.level=lvs.value;fill()}},h('option',{value:''},'All courts'),Object.keys(LEVELS).map(function(k){var o=h('option',{value:k},LEVELS[k]);if(ui.level===k)o.selected=true;return o}));
+ var box=h('div');list.append(h('div',{class:'form'},field('Search',filt),field('Show',lvs)),box);
+ function fill(){box.replaceChildren();var q=(ui.filter||'').toLowerCase();
+  var rows=S.cases.filter(function(c){return (!ui.level||lv(c)===ui.level)&&(!q||[c.title,c.client,c.opp,c.court,c.caseType,c.caseNo,c.stage].join(' ').toLowerCase().indexOf(q)>-1)});
+  rows.sort(function(a,b){return (a.nextDate||'9999').localeCompare(b.nextDate||'9999')});
+  if(!rows.length){box.append(h('p',{class:'empty'},S.cases.length?'No case matches.':'No cases yet. Add one, or load three clearly marked examples to see how it works.'));
+   if(!S.cases.length)box.append(h('button',{class:'b',type:'button',onclick:loadExamples},'Load example entries'))}
+  rows.forEach(function(c){box.append(caseItem(c))})}
+ fill();
+ var t0=today(),soon=[];
+ S.cases.forEach(function(c){var d=parse(c.nextDate);if(d!=null&&diff(d,t0)>=0&&diff(d,t0)<=7)soon.push({ms:d,kind:'Hearing',title:c.title,sub:courtLine(c)});
+  (c.deadlines||[]).forEach(function(x){var dd=parse(x.date);if(dd!=null&&diff(dd,t0)>=0&&diff(dd,t0)<=7)soon.push({ms:dd,kind:'Deadline',title:c.title,sub:x.label})})});
+ soon.sort(function(a,b){return a.ms-b.ms});
+ var week=h('div',{class:'card'},h('h2',{},'Next 7 days'),soon.length?soon.map(function(s){var r=rel(s.ms);return h('div',{class:'item'},h('div',{},chip(s.kind,s.kind==='Deadline'?'bad':''),' ',h('strong',{},s.title)),h('div',{class:'meta'},h('span',{class:'num'},long(s.ms)),chip(r[0],r[1]),s.sub))}):h('p',{class:'empty'},'Nothing due. This page cannot send alerts when closed, so open it each morning.'));
+ return h('div',{class:'grid'},h('div',{style:'display:flex;flex-direction:column;gap:16px;min-width:0'},week,form),list)}
+
+function loadExamples(){var t=today();
+ [['Example: Sharma v. Verma (NI Act 138)','Client A','Verma','trial','Meerut','Court 12','7','CC','101/2026','Evidence',addDays(t,2)],['Example: Gupta v. State of U.P.','Client B','State of U.P.','hc','Allahabad','Court 34','112','Crl. Misc. (BNSS 528)','5523/2026','Admission',addDays(t,9)],['Example: Singh v. Rao','Client C','Rao','sc','New Delhi','Court 5','48','SLP (C)','9120/2026','Notice issued','']].forEach(function(x){
+  S.cases.push({id:uid(),example:true,title:x[0],client:x[1],opp:x[2],level:x[3],court:x[4],bench:x[5],item:x[6],caseType:x[7],caseNo:x[8],stage:x[9],nextDate:x[10]?iso(x[10]):'',notes:'Example entry. Delete it or use Data > Delete examples.',log:[],deadlines:[]})});
+ save();render()}
+
+/* ================= DAY LIST (court-wise) ================= */
+function dayList(){
+ var d=ui.day||iso(today());
+ var di=h('input',{id:'d_date',type:'date',value:d,onchange:function(){ui.day=di.value||iso(today());render()}});
+ function shift(n){return function(){ui.day=iso(addDays(parse(d),n));render()}}
+ var rows=S.cases.filter(function(c){return c.nextDate===d});
+ var groups={};rows.forEach(function(c){var k=courtLine(c)+(c.bench?' · '+c.bench:'');(groups[k]=groups[k]||[]).push(c)});
+ var keys=Object.keys(groups).sort(function(a,b){var ca=groups[a][0],cb=groups[b][0];return (LORDER[lv(ca)]-LORDER[lv(cb)])||a.localeCompare(b)});
+ var dd=allDeadlines().filter(function(x){return x.d.date===d});
+ var card=h('div',{class:'card'},h('h2',{},'Court-wise list'),
+  h('div',{class:'row'},field('Date',di),h('button',{class:'b',type:'button',onclick:shift(-1)},'← Previous'),h('button',{class:'b',type:'button',onclick:shift(1)},'Next →'),h('button',{class:'b',type:'button',onclick:function(){ui.day=iso(today());render()}},'Today')),
+  h('p',{class:'small'},d?long(parse(d)):''));
+ if(keys.length>1)card.append(h('div',{class:'banner',style:'margin:8px 0'},'You have matters in '+keys.length+' different courts or benches on this date. Check that you can reach all of them.'));
+ if(!keys.length)card.append(h('p',{class:'empty'},'No hearings on this date.'));
+ keys.forEach(function(k){card.append(h('h3',{style:'margin-top:12px'},k));groups[k].sort(function(a,b){return itemNo(a)-itemNo(b)}).forEach(function(c){
+  card.append(h('div',{class:'item'},h('div',{},c.item?chip('Item '+c.item):null,' ',h('strong',{},c.title)),h('div',{class:'meta'},[c.caseType,c.caseNo].filter(Boolean).join(' '),c.client&&('Client: '+c.client),c.stage&&('Stage: '+c.stage))))})});
+ if(dd.length){card.append(h('h3',{style:'margin-top:14px'},'Deadlines on this date'));dd.forEach(function(x){card.append(h('div',{class:'meta',style:'margin-top:6px'},chip('Deadline','bad'),h('strong',{},x.c.title),x.d.label))})}
+ return card}
+
+/* ================= LIMITATION GUIDE + CALCULATOR ================= */
+/* conf: chk = read in a web copy of the source; mem = from the author's memory, verify; none = no fixed period */
+var LIM=[];
+function L(id,cat,title,period,n,unit,from,auth,conf,note,grace){LIM.push({id:id,cat:cat,title:title,period:period,n:n,unit:unit,from:from,auth:auth,conf:conf,note:note||'',grace:grace||0})}
+var CATS={civil:'Civil appeals and applications',crim:'Criminal appeals and revision',sc:'Supreme Court',writ:'Writs',inh:'BNSS 528 (old Section 482)',other:'Other special laws'};
+L('c1','civil','Appeal to the High Court from a decree or order (CPC)','90 days',90,'days','Date of the decree or order','Limitation Act, Article 116(a)','chk','Time spent getting the certified copy is excluded (Section 12(2)). Delay in an appeal can be condoned under Section 5.');
+L('c2','civil','Appeal to any other court from a decree or order (CPC)','30 days',30,'days','Date of the decree or order','Limitation Act, Article 116(b)','chk','Same exclusions and condonation as above.');
+L('c3','civil','Appeal from a High Court decree or order to the same Court (intra-court, letters patent)','30 days',30,'days','Date of the decree or order','Limitation Act, Article 117','chk','Allahabad special appeal (High Court Rules 1952, Chapter VIII Rule 5): the rule text I read gives no number of days, and courts apply the Act. Confirm the current position before relying on 30 days.');
+L('c4','civil','Set aside an ex parte decree (Order IX Rule 13 CPC)','30 days',30,'days','Date of the decree, or when the summons was served if it was not duly served','Limitation Act, Article 123','mem','Check the article text for the exact starting point.');
+L('c5','civil','Restore a suit dismissed for default (Order IX Rule 9 CPC)','30 days',30,'days','Date of dismissal','Limitation Act, Article 122','mem','');
+L('c6','civil','Review of a judgment (Order XLVII CPC)','30 days',30,'days','Date of the decree or order','Limitation Act, Article 124','mem','Verify the article and any High Court rule.');
+L('c7','civil','Execution of a decree','12 years',null,'','When the decree becomes enforceable','Limitation Act, Article 136','mem','Calculator below works in days and months only. Use this as a reference.');
+L('r1','crim','Appeal from a sentence of death (Sessions Court, or High Court original side)','30 days',30,'days','Date of the sentence','Limitation Act, Article 115(a). BNSS Section 415 (old CrPC 374)','chk','The Act text I read still refers to the 1898 Code. Courts apply it to the later codes.');
+L('r2','crim','Appeal to the High Court from any other sentence or order (not an acquittal)','60 days',60,'days','Date of the sentence or order','Limitation Act, Article 115(b)(i). BNSS Section 415','chk','');
+L('r3','crim','Appeal to any other court, e.g. Sessions Court from a Magistrate','30 days',30,'days','Date of the sentence or order','Limitation Act, Article 115(b)(ii). BNSS Section 415','chk','');
+L('r4','crim','State appeal against acquittal (to the High Court or Sessions Court)','90 days',90,'days','Date of the order appealed from','Limitation Act, Article 114(a). BNSS Section 419 (old CrPC 378(1),(2))','chk','');
+L('r5','crim','Application for special leave to appeal against acquittal (complainant or private party)','60 days (6 months if the complainant is a public servant)',60,'days','Date of the order of acquittal','BNSS Section 419(4),(5) (old CrPC 378(4),(5))','mem','From memory of the Code. Read the section before filing. Cheque bounce acquittals fall here.');
+L('r6','crim','Appeal after special leave is granted','30 days',30,'days','Date special leave is granted','Limitation Act, Article 114(b)','chk','');
+L('r7','crim','Criminal revision to the Sessions Court or High Court','About 90 days (check)',90,'days','Date of the order','BNSS Sections 438 and 442 (old CrPC 397, 401)','mem','The Appeal articles I read (114 to 117) do not cover revision. A period of about 90 days is commonly applied, but confirm it in your High Court Rules and recent orders.');
+L('r8','crim','Bail applications (BNSS 483, anticipatory bail under BNSS 482)','No fixed period',null,'','Not applicable','BNSS Sections 482, 483','none','Bail can be sought at any time while the grounds exist. Repeat applications depend on changed circumstances.');
+L('s1','sc','Special leave petition against a High Court judgment or order (Article 136)','90 days',90,'days','Date of the judgment or order','Supreme Court Rules (page dated July 2019; it cites the 1966 Rules)','chk','Check Order XXI of the Supreme Court Rules 2013 and any recent directions.');
+L('s2','sc','Special leave petition where the High Court refused a certificate of fitness','60 days',60,'days','Date of the order refusing the certificate','Supreme Court Rules (page dated July 2019)','chk','Same check as above.');
+L('s3','sc','Review petition in the Supreme Court','30 days',30,'days','Date of the judgment or order','Order XLVII Rule 2, Supreme Court Rules 2013','mem','Verify.');
+L('s4','sc','Curative petition','No fixed period',null,'','Not applicable','Rupa Ashok Hurra line of cases','none','The page I read said there is no time limit. File without delay.');
+L('s5','sc','Appeal to the Supreme Court under the Consumer Protection Act 2019','30 days',30,'days','Date of the order of the National Commission','Consumer Protection Act 2019, Section 67','mem','Verify.');
+L('w1','writ','Writ petition under Article 226 (High Court)','No fixed period. Delay and laches apply.',null,'','Not applicable','Constitution Article 226. Allahabad High Court, Hari Narayan Tiwari v. State Information Commission (2026 LiveLaw (AB) 496)','chk','In that case a delay of nearly three years with no explanation led to dismissal. That is one case, not a rule. Explain every month of delay in the petition.');
+L('w2','writ','Writ petition under Article 32 (Supreme Court)','No fixed period. Delay can still count against you.',null,'','Not applicable','Constitution Article 32','none','Courts weigh delay when deciding relief.');
+L('w3','writ','Intra-court appeal from a writ judgment (UP special appeal)','30 days (check)',30,'days','Date of the judgment','Limitation Act Article 117, as applied by courts. High Court Rules 1952, Chapter VIII Rule 5','mem','See the note under the intra-court entry.');
+L('w4','writ','Service matter before the Administrative Tribunal','1 year (6 months after an unanswered representation)',null,'','Date of the final order','Administrative Tribunals Act 1985, Section 21','mem','Verify.');
+L('i1','inh','Petition under BNSS Section 528 (old CrPC Section 482)','No fixed period. Delay and other remedies matter.',null,'','Not applicable','BNSS Section 528','none','No limitation is fixed, but courts ask why a statutory appeal or revision was not used. A 2026 Delhi High Court order was reported as saying Section 528 cannot be a back door to reopen a failed revision unless there is gross injustice. Read the order itself.');
+L('i2','inh','Quashing an FIR or proceedings under Section 528','No fixed period',null,'','Not applicable','BNSS Section 528','none','Delay in approaching the court and the stage of the case both affect relief.');
+L('o1','other','Application to set aside an arbitral award (Section 34, Arbitration Act)','3 months. A further 30 days if delay is condoned. No more.',3,'months','Date the award was received','Arbitration and Conciliation Act 1996, Section 34(3)','mem','The outer limit is shown as a second date by the calculator.',30);
+L('o2','other','Consumer appeal from the District Commission to the State Commission','45 days',45,'days','Date of the order','Consumer Protection Act 2019, Section 41','mem','Verify.');
+L('o3','other','Consumer appeal from the State Commission to the National Commission','30 days',30,'days','Date of the order','Consumer Protection Act 2019, Section 51','mem','Verify.');
+var MAPPING=[['374 Appeals from convictions','415'],['372 No appeal unless provided','413'],['378 Appeal against acquittal','419'],['389 Suspension of sentence, bail pending appeal','430'],['397 Calling for records (revision)','438'],['401 High Court revision powers','442'],['438 Anticipatory bail','482'],['439 Bail by High Court or Sessions Court','483'],['482 Inherent powers of the High Court','528']];
+var CONF={chk:['Read in a web copy of the source','ok'],mem:['From memory. Verify before use','warn'],none:['No fixed period','']};
+
+function limitation(){
+ var st=ui.lim;
+ function entry(){return LIM.filter(function(x){return x.id===st.pick})[0]}
+ var out=h('div'),f={};
+ function inp(k,lab,type,ph){f[k]=h('input',{id:'m_'+k,type:type,value:st[k]||'',placeholder:ph||null,oninput:function(){st[k]=f[k].value;calc()}});return field(lab,f[k])}
+ function drow(k,lab){return h('div',{class:'row'},inp(k,lab,'date'),h('button',{class:'b',type:'button',onclick:function(){f[k].value='';st[k]='';calc()}},'Clear'))}
+ var sel=h('select',{id:'m_pick',onchange:function(){st.pick=sel.value;render()}},LIM.filter(function(x){return x.n}).map(function(x){var o=h('option',{value:x.id},x.title+' – '+x.period);if(x.id===st.pick)o.selected=true;return o}));
+ var caseSel=h('select',{id:'m_case',onchange:function(){st.caseId=caseSel.value}},h('option',{value:''},'Choose a case to save to'),S.cases.map(function(c){var o=h('option',{value:c.id},c.title);if(c.id===st.caseId)o.selected=true;return o}));
+ var lab=h('input',{id:'m_label',type:'text',placeholder:'Deadline label (optional)',value:st.label||'',oninput:function(){st.label=lab.value}});
+ function calc(){var en=entry(),od=parse(st.order);out.replaceChildren(h('h3',{},'Result'));
+  if(!en||!en.n){out.append(h('p',{class:'empty'},'Pick a remedy that has a fixed period.'));return}
+  if(od==null){out.append(h('p',{class:'empty'},'Enter the date of the order above.'));return}
+  var ap=parse(st.applied),rd=parse(st.ready),excl=(ap!=null&&rd!=null&&rd>ap?diff(rd,ap):0)+(parseInt(st.extra,10)||0);
+  var base=en.unit==='months'?addMonths(od,en.n):addDays(od,en.n),last=addDays(base,excl),r=rel(last);
+  out.append(h('div',{class:'tl'},h('div',{},h('strong',{},'Last day (from the order)')),h('div',{class:'num'},long(last)),h('div',{class:'rule'},'Day of the order is not counted. '+en.n+' '+en.unit+(excl?' plus '+excl+' excluded days.':'.')+' ',chip(r[0],r[1]))));
+  if(en.grace){var g=addDays(last,en.grace);out.append(h('div',{class:'tl'},h('div',{},h('strong',{},'Outer limit if delay is condoned')),h('div',{class:'num'},long(g)),h('div',{class:'rule'},'The court cannot go beyond this date.')))}
+  out.append(h('p',{class:'small'},'If the last day is a court holiday, the next working day may apply (Section 4). Counting rules differ by court, so check yours. Delay in an appeal or application may be condoned under Section 5 for sufficient cause.'),
+   h('div',{class:'actions'},h('button',{class:'b p',type:'button',onclick:function(){var c=S.cases.filter(function(x){return x.id===st.caseId})[0];if(!c){flash('Choose a case first.');caseSel.focus();return}
+     c.deadlines=c.deadlines||[];c.deadlines.push({id:uid(),label:(st.label||'').trim()||en.title,date:iso(last)});save();flash('Deadline saved to the case.');render()}},'Save deadline to case')))}
+ var left=h('div',{style:'display:flex;flex-direction:column;gap:16px;min-width:0'},
+  h('div',{class:'card'},h('h2',{},'Limitation calculator'),
+   h('div',{style:'display:flex;flex-direction:column;gap:10px'},field('Remedy',sel),drow('order','Date of the order or judgment'),drow('applied','Date you applied for the certified copy (optional)'),drow('ready','Date the copy was ready (optional)'),inp('extra','Other days to exclude (optional)','number','0'),
+   h('div',{class:'form'},field('Save to case',caseSel),field('Label',lab))),
+   h('div',{class:'actions'},h('button',{class:'b',type:'button',onclick:function(){ui.lim={pick:st.pick,order:'',applied:'',ready:'',extra:'',caseId:'',label:''};render()}},'Clear all fields'))),
+  h('div',{class:'card'},out));
+ calc();
+ /* writ delay meter */
+ var wd=h('input',{id:'w_date',type:'date',value:ui.writDate||'',oninput:function(){ui.writDate=wd.value;meter()}}),wo=h('div');
+ function meter(){wo.replaceChildren();var d=parse(ui.writDate);if(d==null)return;var n=diff(today(),d);wo.append(h('p',{},h('strong',{class:'num'},n+' days'),' have passed (about '+Math.floor(n/30.44)+' months). No fixed limit applies to a writ, but every month of delay needs an explanation.'))}
+ meter();
+ left.append(h('div',{class:'card'},h('h2',{},'Writ delay meter'),h('div',{class:'row'},field('Date of the order or cause of action',wd),h('button',{class:'b',type:'button',onclick:function(){wd.value='';ui.writDate='';meter()}},'Clear')),wo));
+ /* guide */
+ var gq=h('input',{id:'g_q',type:'search',placeholder:'Search e.g. revision, SLP, 528',value:ui.gq||'',oninput:function(){ui.gq=gq.value;fillG()}});
+ var gc=h('select',{id:'g_c',onchange:function(){ui.gc=gc.value;fillG()}},h('option',{value:''},'All groups'),Object.keys(CATS).map(function(k){var o=h('option',{value:k},CATS[k]);if(ui.gc===k)o.selected=true;return o}));
+ var gb=h('div');
+ function fillG(){gb.replaceChildren();var q=(ui.gq||'').toLowerCase();
+  LIM.filter(function(x){return (!ui.gc||x.cat===ui.gc)&&(!q||(x.title+' '+x.auth+' '+x.note+' '+x.period).toLowerCase().indexOf(q)>-1)}).forEach(function(x){var cf=CONF[x.conf];
+   gb.append(h('div',{class:'item'},h('div',{},h('strong',{},x.title)),h('div',{class:'meta'},chip(CATS[x.cat]),chip(cf[0],cf[1])),
+    h('div',{},'Period: ',h('strong',{},x.period),x.from!=='Not applicable'?' from '+x.from.charAt(0).toLowerCase()+x.from.slice(1):''),
+    h('div',{class:'small'},x.auth),x.note?h('div',{class:'small'},x.note):null,
+    x.n?h('div',{class:'actions',style:'margin-top:2px'},h('button',{class:'b',type:'button',onclick:function(){st.pick=x.id;render();window.scrollTo(0,0)}},'Use in calculator')):null))});
+  if(!gb.children.length)gb.append(h('p',{class:'empty'},'No entry matches.'))}
+ fillG();
+ var map=h('div',{class:'card'},h('h2',{},'Old CrPC section to BNSS section'),h('p',{class:'small'},'From memory. Confirm against the Act before citing.'),
+  h('div',{class:'scroll'},h('table',{},h('thead',{},h('tr',{},h('th',{},'CrPC 1973'),h('th',{class:'r'},'BNSS 2023'))),h('tbody',{},MAPPING.map(function(m){return h('tr',{},h('td',{},m[0]),h('td',{class:'r num'},m[1]))})))),
+  h('p',{class:'small'},'BNSS has 531 sections. The old Section 482 is now Section 528.'));
+ var right=h('div',{style:'display:flex;flex-direction:column;gap:16px;min-width:0'},h('div',{class:'card'},h('h2',{},'Limitation guide'),
+  h('p',{class:'small'},'Each entry shows how I verified it. This is a study aid, not legal advice. Always read the Act and your High Court Rules, and check for later amendments.'),
+  h('div',{class:'form'},field('Search',gq),field('Group',gc)),gb),map);
+ return h('div',{class:'grid'},left,right)}
+
+/* ================= CHEQUE BOUNCE (NI Act s.138 / s.142) ================= */
+function cheque(){
+ if(!ui.calc){var t=today();ui.calc={cheque:iso(addDays(t,-70)),presented:iso(addDays(t,-62)),memo:iso(addDays(t,-30)),sent:iso(addDays(t,-12)),recv:iso(addDays(t,-9)),ref:'',example:true}}
+ var c=ui.calc,out=h('div'),f={};
+ function inp(k,lab,hint){f[k]=h('input',{id:'q_'+k,type:'date',value:c[k]||'',oninput:function(){c[k]=f[k].value;c.example=false;calc()}});
+  return h('div',{},h('div',{class:'row'},field(lab,f[k]),h('button',{class:'b',type:'button',onclick:function(){f[k].value='';c[k]='';calc()}},'Clear')),hint?h('div',{class:'small'},hint):null)}
+ var ref=h('input',{id:'q_ref',type:'text',placeholder:'e.g. Sharma v. Verma, cheque no. 123456',value:c.ref||'',oninput:function(){c.ref=ref.value}});
+ var form=h('div',{class:'card'},h('h2',{},'Cheque details'),c.example?h('div',{class:'banner warn',style:'margin-bottom:10px'},'These are example dates. Press "Clear all dates" and enter your own.'):null,
+  h('div',{style:'display:flex;flex-direction:column;gap:10px'},
+   inp('cheque','Date on the cheque'),inp('presented','Date presented to the bank (optional)'),inp('memo','Date the bank gave the return memo / dishonour information','Notice time runs from the date you got this information.'),inp('sent','Date demand notice was sent (optional)'),inp('recv','Date the drawer received the notice','Needed for the 15-day payment period.')),
+  h('div',{class:'actions'},h('button',{class:'b',type:'button',onclick:function(){ui.calc={cheque:'',presented:'',memo:'',sent:'',recv:'',ref:''};render()}},'Clear all dates')));
+ function row(label,ms,rule,status){var r=ms!=null?rel(ms):null;
+  return h('div',{class:'tl'},h('div',{},h('strong',{},label)),h('div',{class:'num'},ms!=null?long(ms):'Enter the date above'),h('div',{class:'rule'},rule,' ',status||'',r?' ':'',r?chip(r[0],r[1]):null))}
+ function compute(){var ch=parse(c.cheque),pr=parse(c.presented),me=parse(c.memo),se=parse(c.sent),rc=parse(c.recv);
+  var present=ch!=null?addDays(addMonths(ch,3),-1):null;
+  var noticeBy=me!=null?addDays(me,30):null;
+  var payEnd=rc!=null?addDays(rc,15):null;
+  var cause=payEnd!=null?addDays(payEnd,1):null;
+  var lastFile=cause!=null?addMonths(cause,1):null;
+  return{present:present,noticeBy:noticeBy,payEnd:payEnd,cause:cause,lastFile:lastFile,pr:pr,se:se}}
+ function calc(){var r=compute();out.replaceChildren(h('h2',{},'Timeline'),
+  row('1. Present the cheque by',r.present,'Valid for 3 months from its date. Shown as the day before, to be safe.',r.pr!=null&&r.present!=null?chip(r.pr<=r.present?'Presented in time':'Presented late',r.pr<=r.present?'ok':'bad'):''),
+  row('2. Send the demand notice by',r.noticeBy,'Within 30 days of the information from the bank.',r.se!=null&&r.noticeBy!=null?chip(r.se<=r.noticeBy?'Notice sent in time':'Notice sent late',r.se<=r.noticeBy?'ok':'bad'):''),
+  row('3. Drawer’s 15 days end on',r.payEnd,'15 days from receipt of the notice.'),
+  row('4. Cause of action arises on',r.cause,'The day after the 15 days end, if no payment is made.'),
+  row('5. Last day to file the complaint',r.lastFile,'Within one month of the cause of action.'),
+  h('p',{class:'small'},'This is a calculating aid. Confirm each date against Sections 138 and 142 of the NI Act and current case law. The court may condone a late complaint for sufficient cause (proviso to Section 142(1)(b)). If the notice was refused or returned, check the rules on service.'),
+  h('div',{class:'actions'},h('button',{class:'b p',type:'button',onclick:function(){
+    if(!c.cheque&&!c.memo&&!c.recv){flash('Enter some dates before saving.');return}
+    S.timelines.push({id:uid(),ref:c.ref||'Untitled',cheque:c.cheque,presented:c.presented,memo:c.memo,sent:c.sent,recv:c.recv});save();flash('Timeline saved below.');render()}},'Save this timeline')))}
+ var saved=h('div',{class:'card'},h('h2',{},'Saved timelines'));
+ if(!S.timelines.length)saved.append(h('p',{class:'empty'},'None saved yet.'));
+ S.timelines.forEach(function(t){var save1=ui.calc,cc={cheque:t.cheque,presented:t.presented,memo:t.memo,sent:t.sent,recv:t.recv};
+  var rcv=parse(t.recv),last=rcv!=null?addMonths(addDays(rcv,16),1):null,r=last!=null?rel(last):null;
+  saved.append(h('div',{class:'item'},h('strong',{},t.ref),
+   last!=null?h('div',{},'Last day to file: ',h('span',{class:'num'},long(last)),' ',chip(r[0],r[1])):h('div',{class:'small'},'Receipt date missing, so the filing date cannot be worked out.'),
+   h('div',{class:'actions',style:'margin-top:2px'},h('button',{class:'b',type:'button',onclick:function(){ui.calc={cheque:t.cheque,presented:t.presented,memo:t.memo,sent:t.sent,recv:t.recv,ref:t.ref};render();window.scrollTo(0,0)}},'Load'),
+    danger('Delete','Click again to delete',function(){S.timelines=S.timelines.filter(function(x){return x.id!==t.id});save();render()}))))});
+ var left=h('div',{style:'display:flex;flex-direction:column;gap:16px;min-width:0'},h('div',{class:'card'},h('h3',{},'Name or reference (optional)'),ref),form);
+ var right=h('div',{style:'display:flex;flex-direction:column;gap:16px;min-width:0'},h('div',{class:'card'},out),saved);
+ calc();return h('div',{class:'grid'},left,right)}
+
+/* ================= FEES ================= */
+var TYPES={fee:'Fee agreed',payment:'Payment received',expense:'Expense incurred'};
+function clientOf(x){var c=S.cases.filter(function(k){return k.id===x.caseId})[0];return x.client||(c&&c.client)||'General'}
+function caseOf(x){var c=S.cases.filter(function(k){return k.id===x.caseId})[0];return c?c.title:''}
+function fees(){
+ var e=ui.editFee?S.fees.filter(function(x){return x.id===ui.editFee})[0]:null;e=e||{};var f={};
+ f.caseId=h('select',{id:'f_case'},h('option',{value:''},'No case (general)'),S.cases.map(function(c){var o=h('option',{value:c.id},c.title);if(c.id===e.caseId)o.selected=true;return o}));
+ f.client=h('input',{id:'f_client',type:'text',value:e.client||'',placeholder:'Needed if no case is chosen'});
+ f.type=h('select',{id:'f_type'},Object.keys(TYPES).map(function(k){var o=h('option',{value:k},TYPES[k]);if(k===(e.type||'fee'))o.selected=true;return o}));
+ f.amount=h('input',{id:'f_amount',type:'number',min:'0',step:'0.01',value:e.amount||''});
+ f.date=h('input',{id:'f_date',type:'date',value:e.date||iso(today())});
+ f.note=h('input',{id:'f_note',type:'text',value:e.note||'',placeholder:'e.g. Appearance fee, court fee'});
+ var form=h('div',{class:'card'},h('h2',{},e.id?'Edit entry':'Add an entry'),
+  h('div',{class:'form'},field('Case',f.caseId),field('Client name',f.client),field('Type',f.type),field('Amount (₹)',f.amount),h('div',{class:'row'},field('Date',f.date),h('button',{class:'b',type:'button',onclick:function(){f.date.value=''}},'Clear date')),field('Note',f.note)),
+  h('div',{class:'actions'},h('button',{class:'b p',type:'button',onclick:function(){
+    var amt=parseFloat(f.amount.value);if(!(amt>=0)||f.amount.value===''){f.amount.focus();flash('Enter an amount.');return}
+    if(!f.caseId.value&&!f.client.value.trim()){f.client.focus();flash('Choose a case or type a client name.');return}
+    var o={id:e.id||uid(),caseId:f.caseId.value,client:f.client.value.trim(),type:f.type.value,amount:amt,date:f.date.value,note:f.note.value.trim()};
+    if(e.id)S.fees=S.fees.map(function(x){return x.id===e.id?o:x});else S.fees.push(o);ui.editFee=null;save();flash('Entry saved.');render()}},e.id?'Save changes':'Save entry'),
+   h('button',{class:'b',type:'button',onclick:function(){f.caseId.value='';f.client.value='';f.amount.value='';f.date.value='';f.note.value=''}},'Clear all fields'),
+   e.id?h('button',{class:'b',type:'button',onclick:function(){ui.editFee=null;render()}},'Cancel edit'):null));
+ var by={};S.fees.forEach(function(x){var k=clientOf(x);by[k]=by[k]||{due:0,paid:0};if(x.type==='payment')by[k].paid+=x.amount;else by[k].due+=x.amount});
+ var names=Object.keys(by).sort(),tot={due:0,paid:0};
+ var sum=h('div',{class:'card'},h('h2',{},'Balance by client'),names.length?h('div',{class:'scroll'},h('table',{},h('thead',{},h('tr',{},h('th',{},'Client'),h('th',{class:'r'},'Charged'),h('th',{class:'r'},'Received'),h('th',{class:'r'},'Balance'))),
+  h('tbody',{},names.map(function(n){var b=by[n];tot.due+=b.due;tot.paid+=b.paid;return h('tr',{},h('td',{},n),h('td',{class:'r num'},inr(b.due)),h('td',{class:'r num'},inr(b.paid)),h('td',{class:'r num'},h('strong',{},inr(b.due-b.paid))))}),
+   h('tr',{},h('td',{},h('strong',{},'Total')),h('td',{class:'r num'},inr(tot.due)),h('td',{class:'r num'},inr(tot.paid)),h('td',{class:'r num'},h('strong',{},inr(tot.due-tot.paid))))))):h('p',{class:'empty'},'No entries yet. Charged = fees agreed + expenses. Balance = charged − received.'));
+ var led=h('div',{class:'card'},h('h2',{},'Ledger'));
+ S.fees.slice().sort(function(a,b){return (b.date||'').localeCompare(a.date||'')}).forEach(function(x){var d=parse(x.date);
+  led.append(h('div',{class:'item'},h('div',{},h('strong',{class:'num'},inr(x.amount)),' ',chip(TYPES[x.type],x.type==='payment'?'ok':'')),
+   h('div',{class:'meta'},clientOf(x),caseOf(x),d!=null?long(d):'No date',x.note),
+   h('div',{class:'actions',style:'margin-top:2px'},
+    h('button',{class:'b',type:'button',onclick:function(){ui.editFee=x.id;render();window.scrollTo(0,0)}},'Edit'),
+    x.type==='payment'?h('button',{class:'b',type:'button',onclick:function(){ui.receipt='Received with thanks from '+clientOf(x)+' a sum of '+inr(x.amount)+(d!=null?' on '+long(d):'')+' towards '+(x.note||'professional fees')+(caseOf(x)?' in the matter of '+caseOf(x):'')+'.\n\nSignature of Advocate: ____________________';render()}},'Receipt text'):null,
+    danger('Delete','Click again to delete',function(){S.fees=S.fees.filter(function(y){return y.id!==x.id});save();render()}))))});
+ if(!S.fees.length)led.append(h('p',{class:'empty'},'The ledger is empty.'));
+ var rec=ui.receipt?h('div',{class:'card'},h('h2',{},'Receipt text'),h('pre',{id:'rcpt'},ui.receipt),h('div',{class:'actions'},
+   h('button',{class:'b p',type:'button',onclick:function(){var el=document.getElementById('rcpt');function sel(){var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r)}
+     try{navigator.clipboard.writeText(ui.receipt).then(function(){flash('Receipt copied.')},sel)}catch(x){sel()}}},'Copy'),
+   h('button',{class:'b',type:'button',onclick:function(){ui.receipt='';render()}},'Close'))):null;
+ return h('div',{class:'grid'},h('div',{style:'display:flex;flex-direction:column;gap:16px;min-width:0'},form,rec,sum),led)}
+
+/* ================= DATA: backup, restore, delete ================= */
+function data(){
+ var ex=S.cases.filter(function(c){return c.example}).length;
+ var note=h('p',{class:'small',id:'dnote'},'');
+ var file=h('input',{id:'restore',type:'file',accept:'.json,application/json'});
+ var back=h('div',{class:'card'},h('h2',{},'Backup and restore'),
+  h('p',{class:'small'},'You have '+S.cases.length+' cases, '+S.fees.length+' fee entries and '+S.timelines.length+' saved timelines. They live only in this browser.'),
+  h('div',{class:'actions'},h('button',{class:'b p',type:'button',onclick:function(){
+    saveBackup(note)}},'Download backup')),
+  h('div',{style:'margin-top:14px'},field('Restore from a backup file (replaces what is here)',file)),
+  h('div',{class:'actions'},h('button',{class:'b',type:'button',onclick:function(){var fl=file.files&&file.files[0];if(!fl){note.textContent='Choose a backup file first.';return}
+    var r=new FileReader();r.onload=function(){try{var o=JSON.parse(r.result);if(typeof o!=='object'||o===null||!(Array.isArray(o.cases)||Array.isArray(o.fees)||Array.isArray(o.timelines)))throw 0;S=norm(o);save();flash('Backup restored.');render()}catch(x){note.textContent='That file is not a valid Advocate Desk backup.'}};r.readAsText(fl)}},'Restore')),note);
+ function del(label,armed,fn){return h('div',{class:'row',style:'justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--line)'},h('span',{},label),danger('Delete',armed,fn))}
+ var wipe=h('div',{class:'card'},h('h2',{},'Delete data'),h('p',{class:'small'},'Each button asks you to click twice. Deleting cannot be undone, so download a backup first if unsure.'),
+  del('All cases, with their proceedings and deadlines ('+S.cases.length+')','Click again',function(){S.cases=[];ui.editCase=null;save();flash('All cases deleted.');render()}),
+  del('All fee entries ('+S.fees.length+')','Click again',function(){S.fees=[];ui.editFee=null;ui.receipt='';save();flash('All fee entries deleted.');render()}),
+  del('All saved timelines ('+S.timelines.length+')','Click again',function(){S.timelines=[];save();flash('All timelines deleted.');render()}),
+  del('Example entries only ('+ex+')','Click again',function(){S.cases=S.cases.filter(function(c){return !c.example});save();flash('Examples removed.');render()}),
+  h('div',{class:'row',style:'justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--line)'},h('strong',{},'Everything'),danger('Delete everything','Click again to erase all',function(){S=norm();ui.editCase=ui.editFee=null;ui.receipt='';ui.calc=null;try{localStorage.removeItem(KEY)}catch(e){}save();flash('All data deleted.');render()})));
+ return h('div',{class:'grid'},back,wipe)}
+
+function saveBackup(note){
+ var text=JSON.stringify(S,null,2),name='advocate-desk-backup-'+iso(today())+'.json';
+ try{var url=URL.createObjectURL(new Blob([text],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},2000);
+  note.textContent='Backup requested. If no file was saved, copy the text below and keep it in a safe place.'}catch(e){note.textContent='Could not create a file. Copy the text below and keep it safe.'}
+ var old=document.getElementById('backupText');if(old)old.remove();
+ var ta=document.createElement('textarea');ta.id='backupText';ta.readOnly=true;ta.value=text;ta.style.marginTop='8px';ta.style.minHeight='90px';note.after(ta)}
+banner();render();
+})();
+</script>
+
+</body></html>
